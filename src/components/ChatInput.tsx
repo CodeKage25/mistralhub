@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { Send, Paperclip, X, FileText, Cpu } from 'lucide-react';
+import { Send, Paperclip, X, FileText, ChevronDown } from 'lucide-react';
 import { Attachment, ModelInfo, MODELS } from '@/types';
 import { fileToBase64, isImageFile, isDocumentFile } from '@/lib/mistral';
 import { generateId } from '@/lib/storage';
@@ -106,14 +106,56 @@ export default function ChatInput({
         setInput(e.target.value);
         const textarea = e.target;
         textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`;
     };
 
     return (
-        <div className="border-t border-[var(--border)] bg-[var(--background-secondary)]">
+        <div className="flex-shrink-0 border-t border-[var(--border)] bg-[var(--background-secondary)]">
+            {/* Model picker dropdown - appears above input */}
+            {showModelPicker && (
+                <div
+                    ref={modelPickerRef}
+                    className="border-b border-[var(--border)] bg-[var(--background-tertiary)] p-3"
+                >
+                    <p className="text-xs text-[var(--foreground-muted)] mb-2">Select Model</p>
+                    <div className="grid grid-cols-1 gap-2">
+                        {MODELS.map((model) => (
+                            <button
+                                key={model.id}
+                                onClick={() => {
+                                    onModelChange(model);
+                                    setShowModelPicker(false);
+                                }}
+                                className={`w-full p-3 rounded-lg text-left transition-colors flex items-center justify-between ${selectedModel.id === model.id
+                                        ? 'bg-[var(--primary)] text-white'
+                                        : 'bg-[var(--background-secondary)] hover:bg-[var(--border)] text-[var(--foreground)]'
+                                    }`}
+                            >
+                                <div>
+                                    <span className="text-sm font-medium block">
+                                        {model.name}
+                                    </span>
+                                    <span className={`text-xs ${selectedModel.id === model.id ? 'text-white/70' : 'text-[var(--foreground-muted)]'}`}>
+                                        {model.description}
+                                    </span>
+                                </div>
+                                {model.supportsVision && (
+                                    <span className={`text-xs px-2 py-1 rounded ${selectedModel.id === model.id
+                                            ? 'bg-white/20 text-white'
+                                            : 'bg-[var(--accent)]/20 text-[var(--accent)]'
+                                        }`}>
+                                        Vision
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Attachments preview */}
             {attachments.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-3 pb-0">
+                <div className="flex flex-wrap gap-2 p-3 border-b border-[var(--border)]">
                     {attachments.map((attachment) => (
                         <div
                             key={attachment.id}
@@ -123,67 +165,72 @@ export default function ChatInput({
                                 <img
                                     src={attachment.url}
                                     alt={attachment.name}
-                                    className="w-14 h-14 object-cover"
+                                    className="w-16 h-16 object-cover"
                                 />
                             ) : (
-                                <div className="flex items-center gap-1.5 px-2 py-1.5">
-                                    <FileText size={12} className="text-[var(--primary)] flex-shrink-0" />
-                                    <span className="text-[10px] text-[var(--foreground-muted)] truncate max-w-[50px]">
+                                <div className="flex items-center gap-2 px-3 py-2">
+                                    <FileText size={14} className="text-[var(--primary)]" />
+                                    <span className="text-xs text-[var(--foreground-muted)] truncate max-w-[80px]">
                                         {attachment.name}
                                     </span>
                                 </div>
                             )}
                             <button
                                 onClick={() => removeAttachment(attachment.id)}
-                                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--error)] text-white flex items-center justify-center"
+                                className="absolute top-0 right-0 w-5 h-5 rounded-bl-lg bg-[var(--error)] text-white flex items-center justify-center"
                             >
-                                <X size={10} />
+                                <X size={12} />
                             </button>
                         </div>
                     ))}
                 </div>
             )}
 
-            {/* Model picker dropdown */}
-            {showModelPicker && (
-                <div
-                    ref={modelPickerRef}
-                    className="mx-3 mt-3 p-2 rounded-lg bg-[var(--background-tertiary)] border border-[var(--border)] max-h-[200px] overflow-y-auto"
-                >
-                    <div className="space-y-1">
-                        {MODELS.map((model) => (
-                            <button
-                                key={model.id}
-                                onClick={() => {
-                                    onModelChange(model);
-                                    setShowModelPicker(false);
-                                }}
-                                className={`w-full p-2 rounded-md text-left transition-colors flex items-center gap-2 ${selectedModel.id === model.id
-                                        ? 'bg-[var(--primary)]/20 text-[var(--primary)]'
-                                        : 'hover:bg-[var(--background-secondary)] text-[var(--foreground)]'
-                                    }`}
-                            >
-                                <Cpu size={14} className="flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                    <span className="text-xs font-medium block truncate">
-                                        {model.name}
-                                    </span>
-                                </div>
-                                {model.supportsVision && (
-                                    <span className="text-[9px] px-1 py-0.5 bg-[var(--accent)]/20 text-[var(--accent)] rounded flex-shrink-0">
-                                        👁
-                                    </span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Input area */}
+            {/* Main input area */}
             <div className="p-3">
-                {/* Input row with textarea */}
+                {/* Model selector - large and tappable */}
+                <button
+                    onClick={() => setShowModelPicker(!showModelPicker)}
+                    className="w-full mb-3 p-3 rounded-lg bg-[var(--background-tertiary)] border border-[var(--border)] flex items-center justify-between"
+                >
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-md bg-[var(--primary)]/20 flex items-center justify-center">
+                            <span className="text-[var(--primary)] text-sm font-bold">M</span>
+                        </div>
+                        <div className="text-left">
+                            <span className="text-sm font-medium text-[var(--foreground)] block">
+                                {selectedModel.name}
+                            </span>
+                            <span className="text-xs text-[var(--foreground-muted)]">
+                                Tap to change model
+                            </span>
+                        </div>
+                    </div>
+                    <ChevronDown
+                        size={20}
+                        className={`text-[var(--foreground-muted)] transition-transform ${showModelPicker ? 'rotate-180' : ''}`}
+                    />
+                </button>
+
+                {/* Input row */}
                 <div className="flex items-end gap-2">
+                    {/* File upload button */}
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex-shrink-0 w-11 h-11 rounded-lg bg-[var(--background-tertiary)] border border-[var(--border)] flex items-center justify-center text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
+                    >
+                        <Paperclip size={20} />
+                    </button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="hidden"
+                        accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
+                        multiple
+                        onChange={handleFileSelect}
+                    />
+
+                    {/* Text input */}
                     <textarea
                         ref={textareaRef}
                         value={input}
@@ -191,61 +238,21 @@ export default function ChatInput({
                         onKeyDown={handleKeyDown}
                         placeholder="Type a message..."
                         rows={1}
-                        className="flex-1 px-3 py-2 rounded-lg bg-[var(--background-tertiary)] border border-[var(--border)] text-[var(--foreground)] placeholder-[var(--foreground-muted)] resize-none focus-ring transition-colors text-sm"
-                        style={{ minHeight: '40px', maxHeight: '120px' }}
+                        className="flex-1 px-4 py-3 rounded-lg bg-[var(--background-tertiary)] border border-[var(--border)] text-[var(--foreground)] placeholder-[var(--foreground-muted)] resize-none focus-ring transition-colors text-base"
+                        style={{ minHeight: '44px', maxHeight: '100px' }}
                     />
 
                     {/* Send button */}
                     <button
                         onClick={handleSubmit}
                         disabled={(!input.trim() && attachments.length === 0) || isLoading}
-                        className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all ${(!input.trim() && attachments.length === 0) || isLoading
-                                ? 'bg-[var(--background-tertiary)] text-[var(--foreground-muted)]'
+                        className={`flex-shrink-0 w-11 h-11 rounded-lg flex items-center justify-center transition-all ${(!input.trim() && attachments.length === 0) || isLoading
+                                ? 'bg-[var(--background-tertiary)] border border-[var(--border)] text-[var(--foreground-muted)]'
                                 : 'bg-[var(--primary)] text-white'
                             }`}
                     >
-                        <Send size={16} />
+                        <Send size={20} />
                     </button>
-                </div>
-
-                {/* Bottom toolbar */}
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border)]">
-                    {/* Left: action buttons */}
-                    <div className="flex items-center gap-1">
-                        {/* Model selector */}
-                        <button
-                            onClick={() => setShowModelPicker(!showModelPicker)}
-                            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-colors ${showModelPicker
-                                    ? 'bg-[var(--primary)]/20 text-[var(--primary)]'
-                                    : 'text-[var(--foreground-muted)] hover:bg-[var(--background-tertiary)]'
-                                }`}
-                        >
-                            <Cpu size={12} />
-                            <span className="hidden xs:inline">{selectedModel.name.split(' ')[0]}</span>
-                        </button>
-
-                        {/* File upload */}
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs text-[var(--foreground-muted)] hover:bg-[var(--background-tertiary)] transition-colors"
-                        >
-                            <Paperclip size={12} />
-                            <span className="hidden xs:inline">Attach</span>
-                        </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            className="hidden"
-                            accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
-                            multiple
-                            onChange={handleFileSelect}
-                        />
-                    </div>
-
-                    {/* Right: model indicator on mobile */}
-                    <span className="text-[10px] text-[var(--foreground-muted)] xs:hidden">
-                        {selectedModel.name}
-                    </span>
                 </div>
             </div>
         </div>

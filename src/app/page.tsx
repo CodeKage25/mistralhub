@@ -323,7 +323,7 @@ export default function Home() {
       />
 
       {/* Main chat area */}
-      <div className="flex-1 flex flex-col h-full">
+      <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
         {/* Chat header */}
         <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-sm">
           <div className="flex items-center gap-2 ml-10 md:ml-0">
@@ -339,7 +339,7 @@ export default function Home() {
         </header>
 
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
           {!currentConversation || currentConversation.messages.length === 0 ? (
             // Welcome screen
             <div className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center px-2">
