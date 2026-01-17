@@ -1,7 +1,7 @@
 'use client';
 
 import { Message } from '@/types';
-import { Bot, User, Loader2 } from 'lucide-react';
+import { Bot, User } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -14,32 +14,37 @@ export default function ChatMessage({ message }: ChatMessageProps) {
 
     return (
         <div
-            className={`message-animate flex gap-4 p-4 rounded-xl ${isUser
+            className={`message-animate flex gap-2.5 sm:gap-4 p-3 sm:p-4 rounded-xl ${isUser
                     ? 'bg-[var(--background-secondary)]'
                     : 'bg-transparent'
                 }`}
         >
             {/* Avatar */}
             <div
-                className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${isUser
+                className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${isUser
                         ? 'bg-[var(--primary)] text-white'
                         : 'bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] text-white'
                     }`}
             >
                 {isUser ? (
-                    <User size={18} />
+                    <User size={16} className="sm:hidden" />
                 ) : (
-                    <Bot size={18} />
+                    <Bot size={16} className="sm:hidden" />
+                )}
+                {isUser ? (
+                    <User size={18} className="hidden sm:block" />
+                ) : (
+                    <Bot size={18} className="hidden sm:block" />
                 )}
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
                 <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium text-[var(--foreground)]">
-                        {isUser ? 'You' : 'MistralHub'}
+                    <span className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
+                        {isUser ? 'You' : 'Mistral'}
                     </span>
-                    <span className="text-xs text-[var(--foreground-muted)]">
+                    <span className="text-[10px] sm:text-xs text-[var(--foreground-muted)]">
                         {formatTime(message.timestamp)}
                     </span>
                 </div>
@@ -56,11 +61,11 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                                     <img
                                         src={attachment.url}
                                         alt={attachment.name}
-                                        className="max-w-[200px] max-h-[150px] object-cover"
+                                        className="max-w-[150px] sm:max-w-[200px] max-h-[100px] sm:max-h-[150px] object-cover"
                                     />
                                 ) : (
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-[var(--background-tertiary)]">
-                                        <span className="text-sm">{attachment.name}</span>
+                                    <div className="flex items-center gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-[var(--background-tertiary)]">
+                                        <span className="text-xs sm:text-sm truncate max-w-[100px]">{attachment.name}</span>
                                     </div>
                                 )}
                             </div>
@@ -72,18 +77,18 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 {message.isStreaming && !message.content ? (
                     <div className="flex items-center gap-2">
                         <div className="flex gap-1">
-                            <span className="w-2 h-2 rounded-full bg-[var(--primary)] typing-dot" />
-                            <span className="w-2 h-2 rounded-full bg-[var(--primary)] typing-dot" />
-                            <span className="w-2 h-2 rounded-full bg-[var(--primary)] typing-dot" />
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[var(--primary)] typing-dot" />
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[var(--primary)] typing-dot" />
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[var(--primary)] typing-dot" />
                         </div>
                     </div>
                 ) : (
-                    <div className="markdown-content text-[var(--foreground)] leading-relaxed">
+                    <div className="markdown-content text-sm sm:text-base text-[var(--foreground)] leading-relaxed break-words">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {message.content}
                         </ReactMarkdown>
                         {message.isStreaming && (
-                            <span className="inline-block w-2 h-4 bg-[var(--primary)] animate-pulse ml-1" />
+                            <span className="inline-block w-1.5 h-3 sm:w-2 sm:h-4 bg-[var(--primary)] animate-pulse ml-1" />
                         )}
                     </div>
                 )}

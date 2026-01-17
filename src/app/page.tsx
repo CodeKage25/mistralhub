@@ -325,13 +325,13 @@ export default function Home() {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col h-full">
         {/* Chat header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-sm">
-          <div className="flex items-center gap-3 ml-12 md:ml-0">
-            <h2 className="font-semibold text-[var(--foreground)]">
+        <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-sm">
+          <div className="flex items-center gap-2 ml-10 md:ml-0">
+            <h2 className="font-semibold text-sm sm:text-base text-[var(--foreground)] truncate max-w-[180px] sm:max-w-none">
               {currentConversation?.title || 'New Chat'}
             </h2>
           </div>
-          <div className="flex items-center gap-2 text-xs text-[var(--foreground-muted)]">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--foreground-muted)]">
             <span className="px-2 py-1 rounded-md bg-[var(--background-tertiary)]">
               {selectedModel.name}
             </span>
@@ -339,75 +339,69 @@ export default function Home() {
         </header>
 
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
           {!currentConversation || currentConversation.messages.length === 0 ? (
             // Welcome screen
-            <div className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center mb-6 glow-accent">
-                <Sparkles size={40} className="text-white" />
+            <div className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center px-2">
+              <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center mb-4 sm:mb-6 glow-accent">
+                <Sparkles size={28} className="text-white sm:hidden" />
+                <Sparkles size={40} className="text-white hidden sm:block" />
               </div>
-              <h2 className="text-2xl font-bold gradient-text mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold gradient-text mb-2">
                 Welcome to MistralHub
               </h2>
-              <p className="text-[var(--foreground-muted)] mb-8 max-w-md">
-                Your multi-modal AI assistant powered by Mistral AI. Chat, analyze images,
-                and understand documents.
+              <p className="text-sm sm:text-base text-[var(--foreground-muted)] mb-6 sm:mb-8 max-w-md px-4">
+                Your AI assistant powered by Mistral AI
               </p>
 
-              {/* Feature cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-lg">
-                <div className="glass-card p-4 text-center">
-                  <div className="w-10 h-10 rounded-lg bg-[var(--primary)]/20 flex items-center justify-center mx-auto mb-2">
-                    <MessageSquare size={20} className="text-[var(--primary)]" />
+              {/* Feature cards - horizontal on mobile */}
+              <div className="flex gap-3 sm:gap-4 w-full max-w-lg justify-center">
+                <div className="glass-card p-3 sm:p-4 text-center flex-1 max-w-[120px] sm:max-w-none">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[var(--primary)]/20 flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
+                    <MessageSquare size={16} className="text-[var(--primary)] sm:hidden" />
+                    <MessageSquare size={20} className="text-[var(--primary)] hidden sm:block" />
                   </div>
-                  <h3 className="text-sm font-medium text-[var(--foreground)] mb-1">
-                    Smart Chat
+                  <h3 className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
+                    Chat
                   </h3>
-                  <p className="text-xs text-[var(--foreground-muted)]">
-                    Real-time streaming responses
-                  </p>
                 </div>
 
-                <div className="glass-card p-4 text-center">
-                  <div className="w-10 h-10 rounded-lg bg-[var(--accent)]/20 flex items-center justify-center mx-auto mb-2">
-                    <Image size={20} className="text-[var(--accent)]" />
+                <div className="glass-card p-3 sm:p-4 text-center flex-1 max-w-[120px] sm:max-w-none">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[var(--accent)]/20 flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
+                    <Image size={16} className="text-[var(--accent)] sm:hidden" />
+                    <Image size={20} className="text-[var(--accent)] hidden sm:block" />
                   </div>
-                  <h3 className="text-sm font-medium text-[var(--foreground)] mb-1">
-                    Vision AI
+                  <h3 className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
+                    Vision
                   </h3>
-                  <p className="text-xs text-[var(--foreground-muted)]">
-                    Analyze and understand images
-                  </p>
                 </div>
 
-                <div className="glass-card p-4 text-center">
-                  <div className="w-10 h-10 rounded-lg bg-[var(--success)]/20 flex items-center justify-center mx-auto mb-2">
-                    <FileText size={20} className="text-[var(--success)]" />
+                <div className="glass-card p-3 sm:p-4 text-center flex-1 max-w-[120px] sm:max-w-none">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[var(--success)]/20 flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
+                    <FileText size={16} className="text-[var(--success)] sm:hidden" />
+                    <FileText size={20} className="text-[var(--success)] hidden sm:block" />
                   </div>
-                  <h3 className="text-sm font-medium text-[var(--foreground)] mb-1">
-                    Document AI
+                  <h3 className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
+                    Docs
                   </h3>
-                  <p className="text-xs text-[var(--foreground-muted)]">
-                    OCR and document Q&A
-                  </p>
                 </div>
               </div>
 
               {/* Example prompts */}
-              <div className="mt-8 w-full max-w-lg">
-                <p className="text-xs text-[var(--foreground-muted)] mb-3">
+              <div className="mt-6 sm:mt-8 w-full max-w-lg px-2">
+                <p className="text-[10px] sm:text-xs text-[var(--foreground-muted)] mb-2 sm:mb-3">
                   Try asking:
                 </p>
-                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
                   {[
-                    'Explain quantum computing',
-                    'Write a Python function',
-                    'What is Mistral AI?',
+                    'Explain AI',
+                    'Write code',
+                    'What is Mistral?',
                   ].map((prompt) => (
                     <button
                       key={prompt}
                       onClick={() => handleSendMessage(prompt, [])}
-                      className="px-3 py-2 rounded-lg bg-[var(--background-tertiary)] text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)] transition-colors"
+                      className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg bg-[var(--background-tertiary)] text-xs sm:text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)] transition-colors"
                     >
                       {prompt}
                     </button>
